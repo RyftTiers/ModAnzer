@@ -95,7 +95,7 @@ public class MainActivity extends Activity {
         WEAK_CONST_RE = Pattern.compile("\u0001\u0000(?:" + wc + ")(?!\\w)");
     }
     private static final String CF_PROXY_URL = "https://reumqqmnuvabnpmbstnu.supabase.co/functions/v1/modanzer-cf";
-    private static final String TRUSTED_URL = "https://raw.githubusercontent.com/napatc1/ModAnzer/main/trusted.txt";
+    private static final String TRUSTED_URL = "https://raw.githubusercontent.com/RyftTiers/ModAnzer/main/trusted.txt";
 
     // Mods known to be safe even though their code contains a cheat-like name.
     // Matched by exact SHA1 (lowercase) so a renamed cheat can't pretend to be one.
@@ -114,11 +114,11 @@ public class MainActivity extends Activity {
             "natives", "jre", "runtime", "java", "cache", "temp", "tmp"));
     private static final int MAX_DEPTH = 7;
     private static final int MAX_ENTRY = 8 * 1024 * 1024;
-    private static final String UA = "ModAnzer-Android (github.com/napatc1/ModAnzer)";
+    private static final String UA = "ModAnzer-Android (github.com/RyftTiers/ModAnzer)";
 
-    private static final int BG = 0xFF121212, CARD = 0xFF1E1E1E;
-    private static final int C_TEXT = 0xFFE6E6E6, C_DIM = 0xFF8A8A8A, C_HEAD = 0xFF4FC3F7;
-    private static final int C_OK = 0xFF66BB6A, C_UNK = 0xFFFFB74D, C_BAD = 0xFFEF5350, C_HIT = 0xFFCE93D8;
+    private static final int BG = 0xFF060810, CARD = 0xFF0D1117;  // RyftTiers card colours
+    private static final int C_TEXT = 0xFFF0F1F3, C_DIM = 0xFF6B7280, C_HEAD = 0xFF3FA0F5;
+    private static final int C_OK = 0xFF4ADE80, C_UNK = 0xFFF97316, C_BAD = 0xFFF87171, C_HIT = 0xFFB288FF;
 
     private final ExecutorService exec = Executors.newSingleThreadExecutor();
     private final Handler ui = new Handler(Looper.getMainLooper());
@@ -148,7 +148,7 @@ public class MainActivity extends Activity {
         Button b = new Button(this);
         b.setText(text);
         b.setAllCaps(false);
-        b.setTextColor(Color.BLACK);
+        b.setTextColor(Color.WHITE);
         b.setTextSize(15);
         b.setTypeface(Typeface.DEFAULT_BOLD);
         GradientDrawable bg = new GradientDrawable();
@@ -178,7 +178,7 @@ public class MainActivity extends Activity {
 
         TextView title = new TextView(this);
         title.setText("ModAnzer");
-        title.setTextColor(0xFFFFD54F);
+        title.setTextColor(0xFFF97316);
         title.setTextSize(28);
         title.setTypeface(Typeface.DEFAULT_BOLD);
         root.addView(title);
@@ -192,8 +192,8 @@ public class MainActivity extends Activity {
 
         LinearLayout row = new LinearLayout(this);
         row.setOrientation(LinearLayout.HORIZONTAL);
-        bFolder = makeButton("Pick folder", 0xFFFFD54F);
-        bFiles = makeButton("Pick .jar files", 0xFF4FC3F7);
+        bFolder = makeButton("Pick folder", 0xFFF97316);
+        bFiles = makeButton("Pick .jar files", 0xFF3FA0F5);
         row.addView(bFolder);
         row.addView(bFiles);
         root.addView(row);
@@ -207,7 +207,7 @@ public class MainActivity extends Activity {
         root.addView(tip);
 
         status = new TextView(this);
-        status.setTextColor(0xFFFFD54F);
+        status.setTextColor(0xFFF97316);
         status.setTextSize(13);
         status.setPadding(dp(2), 0, dp(2), dp(8));
         status.setVisibility(View.GONE);
@@ -346,8 +346,8 @@ public class MainActivity extends Activity {
                 + " - Read passwords, accounts, contacts, photos or messages\n"
                 + " - Change, move or delete any files\n"
                 + " - Ask for any permission except Internet\n\n", C_DIM, false);
-        append(sb, "Source code: github.com/napatc1/ModAnzer\n\n", C_DIM, false);
-        append(sb, "Tap Pick folder or Pick .jar files to start.", 0xFFFFD54F, true);
+        append(sb, "Source code: github.com/RyftTiers/ModAnzer\n\n", C_DIM, false);
+        append(sb, "Tap Pick folder or Pick .jar files to start.", 0xFFF97316, true);
         return sb;
     }
 

@@ -1,31 +1,31 @@
-# ModAnzer
+# ModAnzer for RyftTiers
 
-A Minecraft mod analyzer for Windows. It finds every mods folder on the PC by itself, so there is no path to paste, then checks each mod against Modrinth and Megabase and scans unknown mods for cheat module names.
+RyftTiers' copy of [PrimeTiers/ModAnzer](https://github.com/PrimeTiers/ModAnzer). A Minecraft mod analyzer for Windows. It finds every mods folder on the PC by itself, so there is no path to paste, then checks each mod against Modrinth and Megabase and scans unknown mods for cheat module names.
 
 Based on [HabibiModAnalyzer](https://github.com/HadronCollision/PowershellScripts) by HadronCollision.
 
 ## Website
 
-**https://modanzer.onrender.com** has the download buttons, the one-liner, and what the tools do and don't do. It's a Render static site built from this repo (`site/index.html`), and it updates on every push to `main`.
+**https://ryfttiers-modanzer.onrender.com** has the download buttons, the one-liner, and what the tools do and don't do. It's a Render static site built from this repo (`site/index.html`), and it updates on every push to `main`.
 
 Shortest way to run it:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -NoProfile -Command "iex ((irm https://modanzer.onrender.com/ModAnzer.txt) -join [char]10)"
+powershell -ExecutionPolicy Bypass -NoProfile -Command "iex ((irm https://ryfttiers-modanzer.onrender.com/ModAnzer.txt) -join [char]10)"
 ```
 
 ## Run it
 
-**Easiest:** download **[ModAnzer.exe](https://github.com/napatc1/ModAnzer/releases/download/apk/ModAnzer.exe)** and open it. It is a small Windows app in PrimeTiers colours: pick a check, press **Start scan**, then press **Get code** and give the code to staff. It runs the same `ModAnzer.ps1` (built into the exe) with Windows PowerShell 5.1 and needs .NET Framework 4.8, which Windows 10 and 11 already have. The source is in [`exe/`](exe). If Windows SmartScreen appears, click **More info → Run anyway**.
+**Easiest:** download **[ModAnzer.exe](https://github.com/RyftTiers/ModAnzer/releases/download/apk/ModAnzer.exe)** and open it. It is a small Windows app in RyftTiers colours (the same dark cards, blue accent and orange warnings as the RyftTiers queue cards): pick a check, press **Start scan**, then press **Get code** and give the code to staff. It runs the same `ModAnzer.ps1` (built into the exe) with Windows PowerShell 5.1 and needs .NET Framework 4.8, which Windows 10 and 11 already have. The source is in [`exe/`](exe). If Windows SmartScreen appears, click **More info → Run anyway**.
 
-**Or:** download **[ModAnzer.bat](https://github.com/napatc1/ModAnzer/releases/download/apk/ModAnzer.bat)** and double-click it. It runs the `ModAnzer.ps1` next to it if there is one, and otherwise downloads the latest version from the website. If Windows SmartScreen appears, click **More info → Run anyway**.
+**Or:** download **[ModAnzer.bat](https://github.com/RyftTiers/ModAnzer/releases/download/apk/ModAnzer.bat)** and double-click it. It runs the `ModAnzer.ps1` next to it if there is one, and otherwise downloads the latest version from the website. If Windows SmartScreen appears, click **More info → Run anyway**.
 
 
 **Easiest way:** download `ModAnzer.ps1`, right-click it and choose **Run with PowerShell**. If Windows asks whether to run a downloaded script, choose **Run once**. The window stays open at the end until you press Enter.
 
 **From a PowerShell window:**
 
-1. Download **[ModAnzer.ps1](https://github.com/napatc1/ModAnzer/releases/download/apk/ModAnzer.ps1)** from the latest release. If you like, check it against `SHA256SUMS.txt` on the [release page](https://github.com/napatc1/ModAnzer/releases/tag/apk).
+1. Download **[ModAnzer.ps1](https://github.com/RyftTiers/ModAnzer/releases/download/apk/ModAnzer.ps1)** from the latest release. If you like, check it against `SHA256SUMS.txt` on the [release page](https://github.com/RyftTiers/ModAnzer/releases/tag/apk).
 2. Open PowerShell in the folder you saved it to and run:
 
 ```powershell
@@ -39,7 +39,7 @@ Please don't run it with a pasted `irm ... | iex` one-liner. Downloading code an
 
 ### Desktop shortcut
 
-To start it with a double-click, download **[ModAnzer.ico](https://github.com/napatc1/ModAnzer/releases/download/apk/ModAnzer.ico)** and put it next to `ModAnzer.ps1`. Then:
+To start it with a double-click, download **[ModAnzer.ico](https://github.com/RyftTiers/ModAnzer/releases/download/apk/ModAnzer.ico)** and put it next to `ModAnzer.ps1`. Then:
 
 1. Right-click the desktop and choose **New → Shortcut**.
 2. For the location, enter the following, changing the path to where you saved the script:
@@ -49,7 +49,7 @@ To start it with a double-click, download **[ModAnzer.ico](https://github.com/na
 3. Name it **ModAnzer** and click **Finish**.
 4. Right-click the shortcut and choose **Properties → Change Icon → Browse**, then pick `ModAnzer.ico`.
 
-Make the shortcut on each PC rather than sending a `.lnk` file to someone. A shortcut only points to files on the PC it was made on, so the receiver gets a broken shortcut with no icon. Discord and antivirus tools also often block shortcut files that start PowerShell, because malware spreads that way. To share it, send the [release page](https://github.com/napatc1/ModAnzer/releases/tag/apk) link instead.
+Make the shortcut on each PC rather than sending a `.lnk` file to someone. A shortcut only points to files on the PC it was made on, so the receiver gets a broken shortcut with no icon. Discord and antivirus tools also often block shortcut files that start PowerShell, because malware spreads that way. To share it, send the [release page](https://github.com/RyftTiers/ModAnzer/releases/tag/apk) link instead.
 
 ## What it can do
 
@@ -93,29 +93,28 @@ Everything is a lead, not proof. Check each one with the player.
 
 ### Sending results to staff
 
-When the scan ends, ModAnzer shows **"Press Enter to send and get your code"** (in the app: the **Get code** button). Sending saves the results on ModAnzer's server and shows a 6-character code, like `7k3qxf`. The player gives the code to staff, and staff run `/ssresult refcode:7k3qxf user:@player` in the PrimeTiers bot to see the report. Closing the window instead sends nothing. Use `-NoSend` to skip this, or `-NoPause` to send without asking.
+When the scan ends, ModAnzer shows **"Press Enter to send and get your code"** (in the app: the **Get code** button). Sending saves the results on ModAnzer's server and shows a 6-character code, like `7k3qxf`. The player gives the code to staff, and staff run `/ssresult refcode:7k3qxf user:@player` in the RyftTiers bot to see the report. Closing the window instead sends nothing. Use `-NoSend` to skip this, or `-NoPause` to send without asking.
 
-- Reports go to ModAnzer's server ([`supabase/functions/modanzer-report`](supabase/functions/modanzer-report/index.ts)), which saves them in the PrimeTiers bot's MongoDB, in the `modanzer_reports` collection, under a random reference code. Nothing is posted until staff look the code up with `/ssresult`.
+- Reports go to ModAnzer's server ([`supabase/functions/modanzer-report`](supabase/functions/modanzer-report/index.ts)), which saves them in the RyftTiers Supabase database, in the `modanzer_reports` table, under a random reference code. Nothing is posted until staff look the code up with `/ssresult`.
 - The server keeps only the fields ModAnzer sends, and caps their sizes. It rate-limits each sender to 6 reports a minute and doesn't store IP addresses.
 - Windows user folders are shown as `~` and user names as `<user>`. Minecraft account **names** are included, never tokens or emails.
 
-Setup, in the **excusemecounter** Supabase project under **Edge Functions → Secrets**:
+Setup, in the **RyftTiers** Supabase project:
 
-| Secret | Value |
-|---|---|
-| `MODANZER_MONGODB_URI` | connection string for the PrimeTiers MongoDB. Use a separate database user that can only insert into `modanzer_reports`, not the bot's own login |
-| `MODANZER_MONGODB_DB` | database name, if it isn't `primetiers` |
+1. Create the table by running [`supabase/modanzer_reports.sql`](supabase/modanzer_reports.sql) in the SQL editor.
+2. Deploy `supabase/functions/modanzer-report` with **JWT verification off** (`supabase functions deploy modanzer-report --no-verify-jwt`). It uses the `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` Supabase gives every function, so there are no secrets to add.
 
-Saved report document:
+Saved row in `modanzer_reports` (JSON columns shown as JSON):
 
 ```json
 {
   "tool": "ModAnzer", "mode": "Full Screenshare", "finished": "2026-11-21 09:30:00 +07:00",
-  "refCode": "7k3qxf", "accounts": ["Steve"],
+  "ref_code": "7k3qxf", "accounts": ["Steve"],
   "mods": { "Folders": [], "Verified": 0, "CurseForgeApp": 0, "Unknown": 0, "Cheat": 0, "Cheats": [{ "Name": "", "Where": "", "Strings": "" }], "Unknowns": [{ "Name": "", "Where": "" }] },
   "system":    { "Admin": true, "Alerts": [{ "Time": "09:20", "Level": "Red", "Text": "" }] },
   "injection": { "Admin": true, "Uptime": "", "GameFolder": "", "Alerts": [] },
-  "status": "new", "receivedAt": "<date>", "senderHash": "<16 hex>"
+  "status": "new", "received_at": "<date>", "sender_hash": "<16 hex>",
+  "checked_by": null, "checked_at": null, "player_id": null
 }
 ```
 
@@ -216,7 +215,7 @@ CurseForge requires an API key and asks that it be kept private, so the lookups 
 
 There's also an Android version in [`android/`](android/). Download it here, on your phone:
 
-**[ModAnzer.apk](https://github.com/napatc1/ModAnzer/releases/download/apk/ModAnzer.apk)**
+**[ModAnzer.apk](https://github.com/RyftTiers/ModAnzer/releases/download/apk/ModAnzer.apk)**
 
 Open the downloaded file to install it. Android will ask you to allow installs from your browser or file manager the first time.
 
@@ -228,7 +227,7 @@ The app needs only the Internet permission and reads only the files or folder yo
 
 GitHub builds the APK whenever something in `android/` changes and signs it with a private key stored in the repo's Actions secrets (`MODANZER_KEYSTORE_BASE64` and `MODANZER_KEYSTORE_PASSWORD`). The key is not in the repo. If the secrets are missing, the build uses a temporary key and new builds won't install over old ones.
 
-From 30 September 2026, certified Android phones in Brazil, Indonesia, Singapore and Thailand only install apps from developers registered with Google, and other countries follow later. To keep the APK installable there, register the app's package name (`com.napatc1.modanzer`) and its signing key in the Android Developer Console. A free limited-distribution account allows up to 20 devices; a full account has a one-time $25 fee.
+From 30 September 2026, certified Android phones in Brazil, Indonesia, Singapore and Thailand only install apps from developers registered with Google, and other countries follow later. To keep the APK installable there, register the app's package name (`com.ryfttiers.modanzer`) and its signing key in the Android Developer Console. A free limited-distribution account allows up to 20 devices; a full account has a one-time $25 fee.
 
 ## What antivirus might say
 
