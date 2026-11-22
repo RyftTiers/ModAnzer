@@ -9,7 +9,7 @@ android {
     compileSdk 35
 
     defaultConfig {
-        applicationId "com.napatc1.modanzer"
+        applicationId "com.ryfttiers.modanzer"
         minSdk 21
         targetSdk 35
         versionCode runNumber

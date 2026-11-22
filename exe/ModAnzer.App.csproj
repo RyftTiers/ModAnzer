@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <!-- ModAnzer.exe: a small Windows app (.NET Framework 4.8, built into Windows 10/11)
-       that runs the ModAnzer script with a PrimeTiers-style interface. -->
+       that runs the ModAnzer script with a RyftTiers-style interface. -->
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net48</TargetFramework>
@@ -12,8 +12,8 @@
     <ApplicationIcon>..\ModAnzer.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Product>ModAnzer</Product>
-    <Company>napatc1</Company>
-    <Description>ModAnzer - Minecraft screenshare scanner (read-only). github.com/napatc1/ModAnzer</Description>
+    <Company>RyftTiers</Company>
+    <Description>ModAnzer - Minecraft screenshare scanner (read-only). github.com/RyftTiers/ModAnzer</Description>
     <Copyright>napatc1</Copyright>
     <Version>1.0.0</Version>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
@@ -23,7 +23,6 @@
   <ItemGroup>
     <EmbeddedResource Include="..\ModAnzer.ps1" LogicalName="ModAnzer.ps1" />
     <EmbeddedResource Include="..\ModAnzer.ico" LogicalName="ModAnzer.ico" />
-    <EmbeddedResource Include="Assets\Silkscreen-Bold.ttf" LogicalName="Silkscreen-Bold.ttf" />
   </ItemGroup>
 
   <ItemGroup>

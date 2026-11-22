@@ -8,25 +8,29 @@ using System.Windows.Forms;
 
 namespace ModAnzer
 {
-    /// <summary>PrimeTiers colours (from primetiers.net) and shared drawing helpers.</summary>
+    /// <summary>RyftTiers colours (from the RyftTiers queue cards) and shared drawing helpers.</summary>
     internal static class Theme
     {
-        public static readonly Color Bg = Hex("#110d1a");
-        public static readonly Color Bg2 = Hex("#161120");
-        public static readonly Color Panel = Hex("#1c1628");
-        public static readonly Color Panel2 = Hex("#241d33");
-        public static readonly Color Row = Hex("#201a2d");
-        public static readonly Color Stone = Hex("#3b3350");
-        public static readonly Color StoneHi = Hex("#4a4066");
-        public static readonly Color Purple = Hex("#9d6bff");
-        public static readonly Color PurpleD = Hex("#6e44d9");
-        public static readonly Color PurpleDD = Hex("#2a1a5e");
-        public static readonly Color Text = Hex("#ece8f6");
-        public static readonly Color Muted = Hex("#9a92b0");
-        public static readonly Color Dim = Hex("#6b6480");
-        public static readonly Color Gold = Hex("#ffc83d");
-        public static readonly Color Win = Hex("#5ee07a");
-        public static readonly Color Loss = Hex("#ff6363");
+        // Same tokens as the RyftTiers queue cards and website: near-black navy, a slightly
+        // lighter card, hairline borders, blue accent and an orange "ember" for warnings.
+        public static readonly Color Bg = Hex("#060810");
+        public static readonly Color Bg2 = Hex("#0a0d14");
+        public static readonly Color Panel = Hex("#0d1117");
+        public static readonly Color Panel2 = Hex("#161b22");
+        public static readonly Color Row = Hex("#11161e");
+        public static readonly Color Stone = Hex("#161b22");
+        public static readonly Color StoneHi = Hex("#1f2630");
+        public static readonly Color Purple = Hex("#3fa0f5");   // RyftTiers accent blue (name kept for MainForm)
+        public static readonly Color PurpleD = Hex("#2f86d6");
+        public static readonly Color PurpleDD = Hex("#0f2a45");
+        public static readonly Color Text = Hex("#f0f1f3");
+        public static readonly Color Muted = Hex("#9ca3af");
+        public static readonly Color Dim = Hex("#6b7280");
+        public static readonly Color Gold = Hex("#f97316");     // ember orange, like "Queue is closed"
+        public static readonly Color Win = Hex("#4ade80");
+        public static readonly Color Loss = Hex("#f87171");
+        public static readonly Color Line = Color.FromArgb(18, 255, 255, 255);
+        public static readonly Color LineHi = Color.FromArgb(40, 255, 255, 255);
 
         public static float Scale = 1f;
         public static int S(int px) { return (int)Math.Round(px * Scale); }
@@ -37,30 +41,12 @@ namespace ModAnzer
             return Color.FromArgb(Convert.ToInt32(h.Substring(0, 2), 16), Convert.ToInt32(h.Substring(2, 2), 16), Convert.ToInt32(h.Substring(4, 2), 16));
         }
 
-        // ---- pixel font (Silkscreen, SIL Open Font License) ----
-        private static PrivateFontCollection _fonts;
-        private static IntPtr _fontMem = IntPtr.Zero;
-
+        // Headings: the RyftTiers cards use a heavy geometric sans (Plus Jakarta Sans).
+        // Segoe UI Bold is the closest font every Windows PC already has. The old pixel
+        // font sizes were set for Silkscreen, which runs wider, so scale them down a bit.
         public static Font Pixel(float px)
         {
-            try
-            {
-                if (_fonts == null)
-                {
-                    byte[] data;
-                    using (var s = typeof(Theme).Assembly.GetManifestResourceStream("Silkscreen-Bold.ttf"))
-                    using (var ms = new MemoryStream()) { s.CopyTo(ms); data = ms.ToArray(); }
-                    _fontMem = Marshal.AllocCoTaskMem(data.Length); // kept for the app's lifetime
-                    Marshal.Copy(data, 0, _fontMem, data.Length);
-                    _fonts = new PrivateFontCollection();
-                    _fonts.AddMemoryFont(_fontMem, data.Length);
-                }
-                return new Font(_fonts.Families[0], px * Scale, FontStyle.Regular, GraphicsUnit.Pixel);
-            }
-            catch
-            {
-                return new Font("Segoe UI", px * 0.8f * Scale, FontStyle.Bold, GraphicsUnit.Pixel);
-            }
+            return new Font("Segoe UI", px * 0.86f * Scale, FontStyle.Bold, GraphicsUnit.Pixel);
         }
 
         public static Font Sans(float px, FontStyle style = FontStyle.Regular)
@@ -78,33 +64,63 @@ namespace ModAnzer
             return new Font(FontFamily.GenericMonospace, px * Scale, GraphicsUnit.Pixel);
         }
 
-        /// <summary>Minecraft-style bevel: light top/left edge, dark bottom/right edge, black outline.</summary>
-        public static void Bevel(Graphics g, Rectangle r, bool outline)
+        public static GraphicsPath Round(RectangleF r, float radius)
         {
-            int b = Math.Max(2, S(2));
-            using (var light = new SolidBrush(Color.FromArgb(46, 255, 255, 255)))
-            using (var dark = new SolidBrush(Color.FromArgb(90, 0, 0, 0)))
-            {
-                g.FillRectangle(light, r.X, r.Y, r.Width, b);
-                g.FillRectangle(light, r.X, r.Y, b, r.Height);
-                g.FillRectangle(dark, r.X, r.Bottom - b - 1, r.Width, b + 1);
-                g.FillRectangle(dark, r.Right - b, r.Y, b, r.Height);
-            }
-            if (outline)
-            {
-                using (var p = new Pen(Color.Black, b)) { p.Alignment = PenAlignment.Inset; g.DrawRectangle(p, r); }
-            }
+            float d = Math.Min(radius * 2, Math.Min(r.Width, r.Height));
+            var p = new GraphicsPath();
+            if (d <= 0) { p.AddRectangle(r); return p; }
+            p.AddArc(r.X, r.Y, d, d, 180, 90);
+            p.AddArc(r.Right - d, r.Y, d, d, 270, 90);
+            p.AddArc(r.Right - d, r.Bottom - d, d, d, 0, 90);
+            p.AddArc(r.X, r.Bottom - d, d, d, 90, 90);
+            p.CloseFigure();
+            return p;
         }
 
-        /// <summary>The faint 32px grid primetiers.net draws on its background.</summary>
+        /// <summary>Rounded card like the RyftTiers queue card: fill, then a 1px hairline border.
+        /// The corners outside the rounding are painted with <paramref name="behind"/>.</summary>
+        public static void Card(Graphics g, Rectangle r, Color fill, Color border, Color behind, int radius)
+        {
+            using (var b = new SolidBrush(behind)) g.FillRectangle(b, r);
+            var old = g.SmoothingMode;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            var rf = new RectangleF(r.X + 0.5f, r.Y + 0.5f, r.Width - 1.5f, r.Height - 1.5f);
+            using (var path = Round(rf, S(radius)))
+            using (var b = new SolidBrush(fill))
+            using (var p = new Pen(border, 1))
+            {
+                g.FillPath(b, path);
+                g.DrawPath(p, path);
+            }
+            g.SmoothingMode = old;
+        }
+
+        /// <summary>Kept for callers: now draws the flat RyftTiers hairline border instead of a bevel.</summary>
+        public static void Bevel(Graphics g, Rectangle r, bool outline)
+        {
+            using (var p = new Pen(outline ? LineHi : Line, 1))
+                g.DrawRectangle(p, r.X, r.Y, r.Width - 1, r.Height - 1);
+        }
+
+        /// <summary>The soft blue (top right) and violet (bottom left) glows behind the RyftTiers cards.</summary>
         public static void Grid(Graphics g, Rectangle r)
         {
-            int step = S(32);
-            int w = Math.Max(1, S(2));
-            using (var b = new SolidBrush(Color.FromArgb(6, 255, 255, 255)))
+            Glow(g, r.X + r.Width * 0.88f, r.Y + r.Height * 0.08f, r.Width * 0.65f, Color.FromArgb(56, 56, 120, 240));
+            Glow(g, r.X + r.Width * 0.05f, r.Y + r.Height * 0.92f, r.Width * 0.48f, Color.FromArgb(36, 109, 40, 217));
+        }
+
+        private static void Glow(Graphics g, float cx, float cy, float radius, Color c)
+        {
+            if (radius < 1) return;
+            using (var path = new GraphicsPath())
             {
-                for (int x = r.X; x < r.Right; x += step) g.FillRectangle(b, x, r.Y, w, r.Height);
-                for (int y = r.Y; y < r.Bottom; y += step) g.FillRectangle(b, r.X, y, r.Width, w);
+                path.AddEllipse(cx - radius, cy - radius, radius * 2, radius * 2);
+                using (var b = new PathGradientBrush(path))
+                {
+                    b.CenterColor = c;
+                    b.SurroundColors = new[] { Color.FromArgb(0, c) };
+                    g.FillPath(b, path);
+                }
             }
         }
 
@@ -153,7 +169,7 @@ namespace ModAnzer
         }
     }
 
-    /// <summary>Square, bevelled button like the ones on primetiers.net.</summary>
+    /// <summary>Rounded button in the RyftTiers card style; selected buttons look like the status chips.</summary>
     internal class PixelButton : Control
     {
         public enum Kind { Stone, Purple }
@@ -183,14 +199,16 @@ namespace ModAnzer
         {
             var g = e.Graphics;
             var r = ClientRectangle;
-            bool purple = Style == Kind.Purple || Selected;
-            Color fill = purple ? (_hover && Enabled ? Theme.Purple : Theme.PurpleD) : (_hover && Enabled ? Theme.StoneHi : Theme.Stone);
-            if (!Enabled) fill = Theme.Panel2;
-            using (var b = new SolidBrush(fill)) g.FillRectangle(b, r);
-            Theme.Bevel(g, r, true);
+            bool primary = Style == Kind.Purple;
+            Color fill, border;
+            if (!Enabled) { fill = Theme.Panel; border = Theme.Line; }
+            else if (primary) { fill = _hover ? Theme.Purple : Theme.PurpleD; border = Color.FromArgb(90, 255, 255, 255); }
+            else if (Selected) { fill = Theme.PurpleDD; border = Color.FromArgb(110, Theme.Purple); }
+            else { fill = _hover ? Theme.StoneHi : Theme.Stone; border = _hover ? Theme.LineHi : Theme.Line; }
+            Theme.Card(g, r, fill, border, Parent != null ? Parent.BackColor : Theme.Bg, 10);
             int pad = Theme.S(16);
             int shift = _down ? Theme.S(1) : 0;
-            Color fg = Enabled ? Color.White : Theme.Dim;
+            Color fg = !Enabled ? Theme.Dim : (Selected && !primary ? Theme.Purple : Color.White);
             if (string.IsNullOrEmpty(Subtitle))
             {
                 Theme.DrawText(g, Text, TitleFont, fg, new RectangleF(pad, shift, r.Width - 2 * pad, r.Height), StringAlignment.Center);
@@ -201,13 +219,13 @@ namespace ModAnzer
                 float sh = SubFont.GetHeight(g);
                 float top = (r.Height - th - sh - Theme.S(2)) / 2f + shift;
                 Theme.DrawText(g, Text, TitleFont, fg, new RectangleF(pad, top, r.Width - 2 * pad, th), StringAlignment.Near, StringAlignment.Near);
-                Theme.DrawText(g, Subtitle, SubFont, Enabled ? (purple ? Color.FromArgb(225, 214, 255) : Theme.Muted) : Theme.Dim,
+                Theme.DrawText(g, Subtitle, SubFont, Enabled ? (primary ? Color.FromArgb(220, 236, 255) : Theme.Muted) : Theme.Dim,
                     new RectangleF(pad, top + th + Theme.S(2), r.Width - 2 * pad, sh), StringAlignment.Near, StringAlignment.Near);
             }
         }
     }
 
-    /// <summary>Dark panel with the site's bevel, optionally a heading.</summary>
+    /// <summary>Rounded dark card with a hairline border, like the RyftTiers queue card.</summary>
     internal class BevelPanel : Panel
     {
         public BevelPanel()
@@ -218,8 +236,7 @@ namespace ModAnzer
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            using (var b = new SolidBrush(BackColor)) e.Graphics.FillRectangle(b, ClientRectangle);
-            Theme.Bevel(e.Graphics, ClientRectangle, false);
+            Theme.Card(e.Graphics, ClientRectangle, BackColor, Theme.Line, Parent != null ? Parent.BackColor : Theme.Bg, 16);
         }
     }
 
@@ -242,8 +259,7 @@ namespace ModAnzer
         protected override void OnPaint(PaintEventArgs e)
         {
             var g = e.Graphics;
-            using (var b = new SolidBrush(Theme.Panel)) g.FillRectangle(b, ClientRectangle);
-            Theme.Bevel(g, ClientRectangle, false);
+            Theme.Card(g, ClientRectangle, Theme.Panel, Theme.Line, Parent != null ? Parent.BackColor : Theme.Bg, 12);
             int h = ClientRectangle.Height;
             Theme.DrawText(g, Label, _labelFont, Theme.Muted, new RectangleF(0, Theme.S(8), Width, h * 0.38f), StringAlignment.Center);
             Theme.DrawText(g, Value, _valueFont, ValueColor, new RectangleF(Theme.S(6), h * 0.38f, Width - Theme.S(12), h * 0.56f), StringAlignment.Center);

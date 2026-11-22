@@ -3,165 +3,244 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ModAnzer</title>
-<meta name="description" content="Minecraft mod analyzer and injection checker for screenshares. Read-only and open source.">
+<title>ModAnzer · RyftTiers</title>
+<meta name="description" content="RyftTiers' Minecraft mod analyzer and injection checker for screenshares. Read-only and open source.">
+<meta name="theme-color" content="#060810">
 <link rel="icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+  /* Same tokens as the RyftTiers queue cards the bot posts in Discord. */
   :root {
-    --bg: #121212;
-    --card: #1c1c1c;
-    --line: #2c2c2c;
-    --text: #e8e8e8;
-    --dim: #9a9a9a;
-    --yellow: #ffd54f;
-    --blue: #4fc3f7;
-    --green: #66bb6a;
-    --red: #ef5350;
-    --mono: ui-monospace, "Cascadia Mono", Consolas, "SF Mono", Menlo, monospace;
+    --bg: #060810;
+    --panel: #0d1117;
+    --panel-2: #11161e;
+    --line: rgba(255,255,255,0.07);
+    --row-line: rgba(255,255,255,0.055);
+    --text: #f0f1f3;
+    --text-med: #9ca3af;
+    --text-dim: #6b7280;
+    --accent: #3fa0f5;
+    --accent-dim: rgba(63,160,245,0.12);
+    --accent-bdr: rgba(63,160,245,0.25);
+    --ember: #f97316;
+    --ember-dim: rgba(249,115,22,0.10);
+    --ember-bdr: rgba(249,115,22,0.28);
+    --gray: #6b7280;
+    --gray-dim: rgba(107,114,128,0.10);
+    --gray-bdr: rgba(107,114,128,0.20);
+    --ok: #4ade80;
+    --bad: #f87171;
+    --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, "SF Mono", Menlo, monospace;
   }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
   body {
     margin: 0;
-    background: var(--bg);
+    min-height: 100vh;
+    background:
+      radial-gradient(60vw 60vw at 92% 4%, rgba(56,120,240,0.16), rgba(56,120,240,0) 70%),
+      radial-gradient(45vw 45vw at 4% 96%, rgba(109,40,217,0.10), rgba(109,40,217,0) 70%),
+      var(--bg);
+    background-attachment: fixed;
     color: var(--text);
-    font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font: 400 14px/1.6 "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   }
-  .wrap { max-width: 860px; margin: 0 auto; padding: 40px 16px 56px; }
-  header { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
-  header svg { width: 64px; height: 64px; flex: none; }
-  h1 { margin: 0; font-size: 34px; line-height: 1.1; letter-spacing: -0.5px; }
-  .tag { color: var(--dim); margin: 4px 0 0; }
-  .notice {
-    margin: 28px 0;
-    padding: 14px 16px;
-    border-left: 3px solid var(--yellow);
-    background: #1a1810;
-    border-radius: 0 8px 8px 0;
-  }
-  .notice strong { color: var(--yellow); }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  b { font-weight: 600; color: var(--text); }
+
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 40px 16px 56px; }
+
+  /* ── Card: 16px radius, hairline border, 24px padding, 76px header with a divider ── */
   .card {
-    background: var(--card);
+    background: var(--panel);
     border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 20px;
+    border-radius: 16px;
+    padding: 0 24px 24px;
     min-width: 0;
   }
-  .card h2 { margin: 0 0 4px; font-size: 20px; }
-  .card .sub { color: var(--dim); margin: 0 0 16px; font-size: 14px; }
-  .label { font-size: 13px; color: var(--dim); margin: 16px 0 6px; }
+  .card-head {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+    min-height: 76px; padding-top: 24px; padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 24px;
+  }
+  .wordmark { font-size: 11px; font-weight: 600; letter-spacing: 0.5px; line-height: 14px; color: rgba(255,255,255,0.38); }
+  .wordmark span { color: var(--accent); }
+  .title { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-top: 7px; }
+  .title h1, .title h2 { margin: 0; font-weight: 800; font-size: 22px; line-height: 1.1; letter-spacing: 0; text-transform: uppercase; }
+  .title .region { font-size: 14px; font-weight: 500; color: var(--text-dim); }
+
+  .chip {
+    flex: none;
+    display: inline-flex; align-items: center; height: 24px; padding: 0 11px;
+    border-radius: 12px; border: 1px solid var(--gray-bdr); background: var(--gray-dim);
+    color: var(--gray); font-size: 10px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .chip.open { color: var(--accent); background: var(--accent-dim); border-color: var(--accent-bdr); }
+  .chip.ember { color: var(--ember); background: var(--ember-dim); border-color: var(--ember-bdr); }
+
+  /* The ember "Queue is closed" style banner */
+  .banner {
+    display: flex; align-items: center; min-height: 40px; padding: 10px 16px;
+    border-radius: 10px; border: 1px solid var(--ember-bdr); background: var(--ember-dim);
+    color: var(--ember); font-size: 13px; font-weight: 600; line-height: 1.45;
+  }
+  .banner.blue { color: var(--accent); border-color: var(--accent-bdr); background: var(--accent-dim); }
+  .after-banner { margin: 14px 0 0; color: var(--text-med); font-size: 13px; }
+  .meta { color: var(--text-dim); font-size: 11px; margin-top: 4px; }
+
+  .col-head { font-size: 10px; font-weight: 700; letter-spacing: 0.8px; color: var(--text-dim); text-transform: uppercase; margin: 22px 0 8px; }
+  .col-head:first-child { margin-top: 0; }
+
+  .hero { margin-bottom: 16px; }
+  .hero p.lead { margin: 14px 0 0; color: var(--text-med); font-size: 14px; max-width: 70ch; }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+
   .cmd {
     display: flex; align-items: stretch;
-    background: #0c0c0c; border: 1px solid var(--line); border-radius: 8px;
+    background: var(--bg); border: 1px solid var(--line); border-radius: 10px;
     overflow: hidden;
   }
   .cmd code {
-    flex: 1; min-width: 0;
-    padding: 10px 12px;
-    font: 13px/1.5 var(--mono);
-    color: #cfe9f5;
+    flex: 1; min-width: 0; padding: 10px 12px;
+    font: 12px/1.5 var(--mono); color: #cfe4f7;
     overflow-x: auto; white-space: nowrap;
   }
   .cmd button {
     flex: none; border: 0; border-left: 1px solid var(--line);
-    background: #222; color: var(--text);
-    padding: 0 14px; font: 600 13px system-ui, sans-serif; cursor: pointer;
+    background: var(--panel-2); color: var(--text-med);
+    padding: 0 14px; font: 700 11px "Plus Jakarta Sans", system-ui, sans-serif; letter-spacing: 0.4px; text-transform: uppercase;
+    cursor: pointer;
   }
-  .cmd button:hover { background: #2b2b2b; }
+  .cmd button:hover { color: var(--text); background: #161b22; }
+
   .btn {
-    display: inline-block; text-decoration: none;
-    padding: 11px 16px; border-radius: 8px;
-    font-weight: 700; color: #111;
+    display: inline-flex; align-items: center; justify-content: center; height: 40px; padding: 0 18px;
+    border-radius: 10px; font-weight: 700; font-size: 13px; text-decoration: none;
+    border: 1px solid var(--accent-bdr); background: var(--accent-dim); color: var(--accent);
   }
-  .btn.y { background: var(--yellow); }
-  .btn.b { background: var(--blue); }
-  .btn:hover { filter: brightness(1.08); }
-  ol { margin: 8px 0 0; padding-left: 20px; }
-  ol li { margin: 4px 0; }
-  .small { font-size: 14px; color: var(--dim); }
-  .tools { margin-top: 32px; }
-  .tools h2, .facts h2 { font-size: 20px; margin: 0 0 12px; }
-  .tool { margin: 0 0 14px; }
-  .tool b { color: var(--yellow); }
-  .facts { margin-top: 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  @media (max-width: 720px) { .facts { grid-template-columns: 1fr; } }
-  .facts ul { margin: 0; padding-left: 20px; }
-  .facts li { margin: 4px 0; }
-  .ok h3 { color: var(--green); } .no h3 { color: var(--red); }
-  .facts h3 { margin: 0 0 8px; font-size: 16px; }
-  footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--dim); font-size: 14px; }
-  a { color: var(--blue); }
+  .btn:hover { text-decoration: none; background: rgba(63,160,245,0.18); }
+  .btn.solid { background: var(--accent); border-color: transparent; color: #04101d; }
+  .btn.solid:hover { background: #5cb1f7; }
+
+  /* Numbered rows, like the queue list */
+  ol.rows { list-style: none; margin: 14px 0 0; padding: 0; counter-reset: row; }
+  ol.rows li {
+    counter-increment: row; display: flex; gap: 12px; align-items: baseline;
+    padding: 9px 0; border-top: 1px solid var(--row-line); color: var(--text-med); font-size: 13px;
+  }
+  ol.rows li:first-child { border-top: 0; }
+  ol.rows li::before { content: counter(row); flex: none; width: 16px; color: var(--text-dim); font-weight: 700; font-size: 11px; }
+  .small { font-size: 13px; color: var(--text-med); margin: 12px 0 0; }
+
+  .tools .tool { padding: 14px 0; border-top: 1px solid var(--row-line); }
+  .tools .card-head + .tool { border-top: 0; padding-top: 0; }
+  .tools .tool h3 { margin: 0 0 4px; font-size: 14px; font-weight: 700; }
+  .tools .tool h3 .n { color: var(--accent); margin-right: 6px; }
+  .tools .tool p { margin: 0; color: var(--text-med); font-size: 13px; }
+
+  .steps code { font: 12px var(--mono); color: var(--accent); background: var(--accent-dim); padding: 1px 6px; border-radius: 6px; }
+
+  ul.list { list-style: none; margin: 0; padding: 0; }
+  ul.list li { padding: 8px 0 8px 18px; border-top: 1px solid var(--row-line); position: relative; color: var(--text-med); font-size: 13px; }
+  ul.list li:first-child { border-top: 0; }
+  ul.list li::before { content: ""; position: absolute; left: 0; top: 15px; width: 6px; height: 6px; border-radius: 50%; background: var(--ok); }
+  .no ul.list li::before { background: var(--bad); }
+
+  footer { margin-top: 24px; color: var(--text-dim); font-size: 11px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  footer .sep { opacity: 0.5; }
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <header>
-    <svg viewBox="0 0 108 108" aria-hidden="true">
-      <path fill="#1E1E1E" d="M24,6h60a18,18 0 0 1 18,18v60a18,18 0 0 1 -18,18h-60a18,18 0 0 1 -18,-18v-60a18,18 0 0 1 18,-18z"/>
-      <path fill="#4FC3F7" d="M28,30h30v30h-30z"/>
-      <path fill="#2E8FBF" d="M28,45h15v15h-15z M43,30h15v15h-15z"/>
-      <circle cx="60" cy="46" r="17" fill="none" stroke="#FFD54F" stroke-width="7"/>
-      <path d="M73,60L86,74" stroke="#FFD54F" stroke-width="9" stroke-linecap="round"/>
-    </svg>
-    <div>
-      <h1>ModAnzer</h1>
-      <p class="tag">Minecraft mod analyzer and injection checker for screenshares.</p>
+  <section class="card hero">
+    <div class="card-head">
+      <div>
+        <div class="wordmark">Ryft<span>Tiers</span></div>
+        <div class="title"><h1>ModAnzer</h1><span class="region">· Screenshare tool</span></div>
+      </div>
+      <span class="chip open">Read-only</span>
     </div>
-  </header>
-
-  <div class="notice">
-    <strong>Not a hacking or malware tool.</strong> It only reads, and it's open source. It checks mods, the running game and Windows' records, then shows the results on screen. At the end, only if you press Enter (or Get code in the app) is a summary of the results sent, and you get a short code to give PrimeTiers staff.
-  </div>
+    <div class="banner">Not a hacking or malware tool. It only reads, and it's open source.</div>
+    <p class="after-banner">It checks your mods, the running game and Windows' records, then shows the results on screen. Only if you press Enter at the end (or <b>Get code</b> in the app) is a summary sent, and you get a short code to give RyftTiers staff.</p>
+    <div class="meta">Staff look the code up with <span style="color:var(--accent)">/ssresult</span> in the RyftTiers Discord.</div>
+  </section>
 
   <div class="grid">
     <section class="card">
-      <h2>Windows</h2>
-      <p class="sub">Mod Analyzer, Injection Checker, System Check</p>
+      <div class="card-head">
+        <div>
+          <div class="wordmark">Ryft<span>Tiers</span></div>
+          <div class="title"><h2>Windows</h2><span class="region">· PC</span></div>
+        </div>
+        <span class="chip open">Full scan</span>
+      </div>
 
-      <div class="label">Paste into PowerShell</div>
+      <div class="col-head">Paste into PowerShell</div>
       <div class="cmd">
-        <code id="oneliner">powershell -ExecutionPolicy Bypass -NoProfile -Command "iex ((irm https://modanzer.onrender.com/ModAnzer.txt) -join [char]10)"</code>
+        <code id="oneliner">powershell -ExecutionPolicy Bypass -NoProfile -Command "iex ((irm https://ryfttiers-modanzer.onrender.com/ModAnzer.txt) -join [char]10)"</code>
         <button type="button" data-copy="oneliner">Copy</button>
       </div>
 
-      <div class="label">Or download the app</div>
-      <a class="btn y" href="https://github.com/napatc1/ModAnzer/releases/download/apk/ModAnzer.exe">Download ModAnzer.exe</a>
-      <ol class="small">
-        <li>If your browser warns about the file, choose <b>Keep</b></li>
-        <li>Open <b>ModAnzer.exe</b>. If Windows says it protected your PC, click <b>More info &rarr; Run anyway</b></li>
-        <li>Pick a check, press <b>Start scan</b>, then press <b>Get code</b> and give the code to staff</li>
+      <div class="col-head">Or download the app</div>
+      <a class="btn solid" href="https://github.com/RyftTiers/ModAnzer/releases/download/apk/ModAnzer.exe">Download ModAnzer.exe</a>
+      <ol class="rows">
+        <li><span>If your browser warns about the file, choose <b>Keep</b></span></li>
+        <li><span>Open <b>ModAnzer.exe</b>. If Windows says it protected your PC, click <b>More info &rarr; Run anyway</b></span></li>
+        <li><span>Pick a check, press <b>Start scan</b>, then <b>Get code</b> and give the code to staff</span></li>
       </ol>
-      <p class="small">No app? <a href="https://github.com/napatc1/ModAnzer/releases/download/apk/ModAnzer.bat">ModAnzer.bat</a> runs the same scan in a PowerShell window.</p>
-      <p class="small">Prefer the script itself? <a href="ModAnzer.ps1" download>Download ModAnzer.ps1</a>, right-click it &rarr; <b>Run with PowerShell</b>.</p>
+      <p class="small">No app? <a href="https://github.com/RyftTiers/ModAnzer/releases/download/apk/ModAnzer.bat">ModAnzer.bat</a> runs the same scan in a PowerShell window. Prefer the script? <a href="ModAnzer.ps1" download>Download ModAnzer.ps1</a>, right-click it &rarr; <b>Run with PowerShell</b>.</p>
     </section>
 
     <section class="card">
-      <h2>Android</h2>
-      <p class="sub">Mod Analyzer for PojavLauncher and similar launchers</p>
-      <a class="btn b" href="https://github.com/napatc1/ModAnzer/releases/download/apk/ModAnzer.apk">Download ModAnzer.apk</a>
-      <ol class="small">
-        <li>Open the downloaded file to install it</li>
-        <li>Allow installs from your browser if Android asks</li>
-        <li>Tap <b>Pick folder</b> and choose your mods or launcher folder</li>
+      <div class="card-head">
+        <div>
+          <div class="wordmark">Ryft<span>Tiers</span></div>
+          <div class="title"><h2>Android</h2><span class="region">· Pojav</span></div>
+        </div>
+        <span class="chip">Mods only</span>
+      </div>
+      <div class="banner blue">Mod Analyzer for PojavLauncher and similar launchers.</div>
+      <div class="col-head" style="margin-top:22px">Install</div>
+      <a class="btn solid" href="https://github.com/RyftTiers/ModAnzer/releases/download/apk/ModAnzer.apk">Download ModAnzer.apk</a>
+      <ol class="rows">
+        <li><span>Open the downloaded file to install it</span></li>
+        <li><span>Allow installs from your browser if Android asks</span></li>
+        <li><span>Tap <b>Pick folder</b> and choose your mods or launcher folder</span></li>
       </ol>
     </section>
   </div>
 
-  <section class="tools">
-    <h2>What it checks</h2>
-    <p class="tool"><b>1. Mod Analyzer</b> finds every mods folder (vanilla, CurseForge, Modrinth, Prism, Lunar, Dawn, Fast Client and more), checks each mod against Modrinth, Megabase and CurseForge, and searches unknown mods for cheat module names. It ends with a list of every cheat and which instance it was in.</p>
-    <p class="tool"><b>2. Injection Checker</b> runs while the game is open. It checks the launch options and loaded DLLs, reads Minecraft's memory (read-only) for cheat names and hidden manual-mapped programs, then watches live for injected DLLs, swapped mods and programs started from Downloads, Desktop or Temp.</p>
-    <p class="tool"><b>3. System Check</b> looks for traces: programs that ran and were deleted (BAM, Prefetch), cheat tools, cleared event logs and PowerShell history, logging services turned off, USB drives, the Recycle Bin, recent downloads, virtual machines and alt account names.</p>
-    <p class="tool"><b>4. Full Screenshare</b> runs all three in a row. For options 2&ndash;4 it asks for administrator rights so it can read Windows' records; the player can say no.</p>
+  <section class="card tools" style="margin-bottom:16px">
+    <div class="card-head">
+      <div>
+        <div class="wordmark">Ryft<span>Tiers</span></div>
+        <div class="title"><h2>What it checks</h2><span class="region">· 4 modes</span></div>
+      </div>
+    </div>
+    <div class="tool"><h3><span class="n">1</span>Mod Analyzer</h3><p>Finds every mods folder (vanilla, CurseForge, Modrinth, Prism, Lunar, Dawn, Fast Client and more), checks each mod against Modrinth, Megabase and CurseForge, and searches unknown mods for cheat module names. It ends with a list of every cheat and which instance it was in.</p></div>
+    <div class="tool"><h3><span class="n">2</span>Injection Checker</h3><p>Runs while the game is open. It checks the launch options and loaded DLLs, reads Minecraft's memory (read-only) for cheat names and hidden manual-mapped programs, then watches live for injected DLLs, swapped mods and programs started from Downloads, Desktop or Temp.</p></div>
+    <div class="tool"><h3><span class="n">3</span>System Check</h3><p>Looks for traces: programs that ran and were deleted (BAM, Prefetch), cheat tools, cleared event logs and PowerShell history, logging services turned off, USB drives, the Recycle Bin, recent downloads, virtual machines and alt account names.</p></div>
+    <div class="tool"><h3><span class="n">4</span>Full Screenshare</h3><p>Runs all three in a row. For options 2&ndash;4 it asks for administrator rights so it can read Windows' records; the player can say no.</p></div>
   </section>
 
-  <section class="facts">
-    <div class="ok">
-      <h3>It does</h3>
-      <ul>
+  <div class="grid">
+    <section class="card ok">
+      <div class="card-head">
+        <div>
+          <div class="wordmark">Ryft<span>Tiers</span></div>
+          <div class="title"><h2>It does</h2></div>
+        </div>
+        <span class="chip open">Allowed</span>
+      </div>
+      <ul class="list">
         <li>Read your mods folders and fingerprint the .jar files</li>
         <li>Look fingerprints up on Modrinth, Megabase and CurseForge</li>
         <li>Read Minecraft's loaded DLLs and memory, without changing anything</li>
@@ -169,22 +248,28 @@
         <li>List Minecraft account names (never tokens or emails)</li>
         <li>Show everything on screen</li>
       </ul>
-    </div>
-    <div class="no">
-      <h3>It doesn't</h3>
-      <ul>
+    </section>
+    <section class="card no">
+      <div class="card-head">
+        <div>
+          <div class="wordmark">Ryft<span>Tiers</span></div>
+          <div class="title"><h2>It doesn't</h2></div>
+        </div>
+        <span class="chip ember">Never</span>
+      </div>
+      <ul class="list">
         <li>Upload your files. Only mod fingerprints, plus a results summary if you press Enter to send it</li>
         <li>Read passwords, tokens, emails, Discord or browser data</li>
         <li>Change game memory or inject into any program</li>
         <li>Change, move or delete files, or install anything</li>
       </ul>
-    </div>
-  </section>
+    </section>
+  </div>
 
   <footer>
-    <a href="ModAnzer.txt">Read the script</a> &middot;
-    <a href="https://github.com/napatc1/ModAnzer">Source on GitHub</a> &middot;
-    Based on HabibiModAnalyzer by HadronCollision
+    <a href="ModAnzer.txt">Read the script</a><span class="sep">·</span>
+    <a href="https://github.com/RyftTiers/ModAnzer">Source on GitHub</a><span class="sep">·</span>
+    <span>Based on HabibiModAnalyzer by HadronCollision</span>
   </footer>
 </div>
 

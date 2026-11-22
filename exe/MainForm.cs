@@ -61,6 +61,7 @@ namespace ModAnzer
         private readonly Bitmap _logo;
         private readonly Font _wordmark;
         private readonly Font _tagline;
+        private readonly Font _taglineBold;
         private readonly bool _isAdmin;
         private readonly string _reportUrl;
 
@@ -84,6 +85,7 @@ namespace ModAnzer
             _logo = new Icon(_appIcon, Theme.S(32), Theme.S(32)).ToBitmap();
             _wordmark = Theme.Pixel(22);
             _tagline = Theme.Sans(13);
+            _taglineBold = Theme.Sans(13, FontStyle.Bold);
             BackColor = Theme.Bg;
             ForeColor = Theme.Text;
             StartPosition = FormStartPosition.CenterScreen;
@@ -229,7 +231,7 @@ namespace ModAnzer
             Theme.Grid(g, ClientRectangle);
             int header = Theme.S(72), pad = Theme.S(24);
             using (var b = new SolidBrush(Color.FromArgb(240, Theme.Bg))) g.FillRectangle(b, 0, 0, ClientSize.Width, header);
-            using (var b = new SolidBrush(Color.FromArgb(46, Theme.Purple))) g.FillRectangle(b, 0, header, ClientSize.Width, Theme.S(2));
+            using (var b = new SolidBrush(Theme.Line)) g.FillRectangle(b, pad, header, ClientSize.Width - 2 * pad, 1);
             g.DrawImage(_logo, pad, (header - _logo.Height) / 2);
             float wx = pad + _logo.Width + Theme.S(12);
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SingleBitPerPixelGridFit;
@@ -237,7 +239,13 @@ namespace ModAnzer
             float anzW = Theme.TextWidth(g, "Anzer", _wordmark);
             Theme.DrawText(g, "Mod", _wordmark, Theme.Text, new RectangleF(wx, 0, modW + Theme.S(40), header));
             Theme.DrawText(g, "Anzer", _wordmark, Theme.Purple, new RectangleF(wx + modW + Theme.S(4), 0, anzW + Theme.S(40), header));
-            Theme.DrawText(g, "for PrimeTiers screenshares", _tagline, Theme.Dim, new RectangleF(wx + modW + anzW + Theme.S(18), 0, Theme.S(260), header));
+            // "· for RyftTiers" with the RyftTiers wordmark colours: "Ryft" dim, "Tiers" accent blue.
+            float tx = wx + modW + anzW + Theme.S(18);
+            float forW = Theme.TextWidth(g, "for ", _tagline);
+            float ryftW = Theme.TextWidth(g, "Ryft", _taglineBold);
+            Theme.DrawText(g, "for ", _tagline, Theme.Dim, new RectangleF(tx, 0, forW + Theme.S(4), header));
+            Theme.DrawText(g, "Ryft", _taglineBold, Theme.Muted, new RectangleF(tx + forW, 0, ryftW + Theme.S(4), header));
+            Theme.DrawText(g, "Tiers", _taglineBold, Theme.Purple, new RectangleF(tx + forW + ryftW, 0, Theme.S(80), header));
             if (_running)
             {
                 Theme.DrawText(g, "Scanning...", _tagline, Theme.Gold, new RectangleF(0, 0, _admin.Left - Theme.S(16), header), StringAlignment.Far);
@@ -455,7 +463,7 @@ namespace ModAnzer
             Append("  - read passwords, tokens, emails, browser data or Discord", ConsoleColor.Gray, false);
             Append("  - change the game's memory, or change, move or delete any files", ConsoleColor.Gray, false);
             Append("", null, false);
-            Append("Source code: https://github.com/napatc1/ModAnzer", ConsoleColor.DarkGray, false);
+            Append("Source code: https://github.com/RyftTiers/ModAnzer", ConsoleColor.DarkGray, false);
             Append("", null, false);
             Append("Pick a check on the left and press Start scan.", ConsoleColor.Yellow, false);
         }
@@ -511,7 +519,7 @@ namespace ModAnzer
                     {
                         wc.Encoding = Encoding.UTF8;
                         wc.Headers[HttpRequestHeader.ContentType] = "application/json; charset=utf-8";
-                        wc.Headers[HttpRequestHeader.UserAgent] = "ModAnzer-App (github.com/napatc1/ModAnzer)";
+                        wc.Headers[HttpRequestHeader.UserAgent] = "ModAnzer-App (github.com/RyftTiers/ModAnzer)";
                         string resp = wc.UploadString(url, "POST", body);
                         var m = Regex.Match(resp, "\"code\"\\s*:\\s*\"([2-9a-z]{6})\"");
                         if (!m.Success) return Tuple.Create((string)null, "the server sent no code");

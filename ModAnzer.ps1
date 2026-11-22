@@ -130,7 +130,7 @@ $TrustedMods = @{
 
 # Extra trusted mods are also read from this file in the GitHub repo, so new
 # versions can be added by editing trusted.txt on GitHub (no script change needed).
-$TrustedListUrl = 'https://raw.githubusercontent.com/PrimeTiers/ModAnzer/main/trusted.txt'
+$TrustedListUrl = 'https://raw.githubusercontent.com/RyftTiers/ModAnzer/main/trusted.txt'
 
 # Cheats and PvP macros that are published on Modrinth (or Megabase/CurseForge) still count
 # as cheats. A known mod is flagged when:
@@ -138,7 +138,7 @@ $TrustedListUrl = 'https://raw.githubusercontent.com/PrimeTiers/ModAnzer/main/tr
 #    no script change needed), or
 #  - its name says what it does (FlaggedNameRegex: "AutoTotem", "Crystal Macro"...), or
 #  - its jar has a class named like a cheat module (AutoTotem.class, TriggerBot.class...).
-$FlaggedListUrl = 'https://raw.githubusercontent.com/PrimeTiers/ModAnzer/main/flagged.txt'
+$FlaggedListUrl = 'https://raw.githubusercontent.com/RyftTiers/ModAnzer/main/flagged.txt'
 $FlaggedNameRegex = [regex]::new('(?ix) \bmacros?\b | auto[\s_-]?(totem|crystal|anchor|pot|clicker|click|hit|double[\s_-]?hand|shield[\s_-]?break) | trigger[\s_-]?bot | (crystal|anchor|kill)[\s_-]?aura | aim[\s_-]?(assist|bot|lock) | (inventory|legit|hover)[\s_-]?totem | jump[\s_-]?reset | ping[\s_-]?spoof | axe[\s_-]?spam | web[\s_-]?macro | self[\s_-]?destruct')
 
 # CurseForge lookups go through ModAnzer's small server, which keeps the CurseForge
@@ -153,8 +153,8 @@ $CurseForgeApiKey = ''
 # Screenshare reports: when the scan ends the player can press Enter to send the results.
 # ModAnzer's server (source: supabase/functions/modanzer-report) saves them and sends back a
 # short code. The player gives the code to staff, who run /ssresult in the Discord bot.
-$ReportServerName = 'PrimeTiers'
-$ReportUrl = 'https://reumqqmnuvabnpmbstnu.supabase.co/functions/v1/modanzer-report'
+$ReportServerName = 'RyftTiers'
+$ReportUrl = 'https://flifswwrhevzjwwhqitc.supabase.co/functions/v1/modanzer-report'
 $script:RunReport = [ordered]@{ Mods = $null; System = $null; Injection = $null; Accounts = @() }
 
 # Legit client files that contain common words like "Velocity" for their own features.
@@ -185,7 +185,7 @@ $SkipDirs = @(
 
 $MaxDepth       = 6          # how deep to look for a mods folder under each root
 $MaxEntryBytes  = 8MB        # skip unusually large entries inside a jar
-$UserAgent      = 'ModAnzer (github.com/napatc1/ModAnzer)'
+$UserAgent      = 'ModAnzer (github.com/RyftTiers/ModAnzer)'
 
 # ---------------------------------------------------------------- helpers
 
@@ -401,7 +401,7 @@ if (-not $SkipIntro) {
     Write-Host '  - Change, move or delete any files, or change any settings' -ForegroundColor Gray
     Write-Host '  - Install anything or keep running after you close it' -ForegroundColor Gray
     Write-Host
-    Write-Host 'Source code: https://github.com/napatc1/ModAnzer' -ForegroundColor DarkGray
+    Write-Host 'Source code: https://github.com/RyftTiers/ModAnzer' -ForegroundColor DarkGray
     Write-Host
     Read-Host 'Press Enter to start (or Ctrl+C to quit)' | Out-Null
     Write-Host
@@ -1226,7 +1226,7 @@ if ($Mode -ne 'mods' -and $IsWindowsOS -and -not $NoPause -and -not (Test-Admin)
         if ($PSCommandPath) {
             $argLine = "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" $extra"
         } else {
-            $argLine = "-NoProfile -ExecutionPolicy Bypass -Command `"& ([scriptblock]::Create(((Invoke-RestMethod 'https://modanzer.onrender.com/ModAnzer.txt') -join [char]10))) $extra`""
+            $argLine = "-NoProfile -ExecutionPolicy Bypass -Command `"& ([scriptblock]::Create(((Invoke-RestMethod 'https://ryfttiers-modanzer.onrender.com/ModAnzer.txt') -join [char]10))) $extra`""
         }
         try {
             Start-Process -FilePath 'powershell.exe' -Verb RunAs -ArgumentList $argLine -ErrorAction Stop

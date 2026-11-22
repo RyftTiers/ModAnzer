@@ -1,20 +1,19 @@
-// ModAnzer screenshare reports -> the PrimeTiers bot's MongoDB.
+// ModAnzer screenshare reports -> the RyftTiers Supabase database.
 // The app sends {report}. This checks it, trims it and saves it to the
-// `modanzer_reports` collection under a short reference code, which it sends
-// back for the player to give to staff. Staff run /ssresult with that code in
-// the PrimeTiers Discord bot to see the report.
-// Secrets (set in this Supabase project):
-//   MODANZER_MONGODB_URI  connection string. Use a database user that can only
-//                         insert into modanzer_reports, not the bot's main login.
-//   MODANZER_MONGODB_DB   database name, defaults to "primetiers"
-// The connection string never leaves this server.
+// `modanzer_reports` table under a short reference code, which it sends back
+// for the player to give to staff. Staff run /ssresult with that code in the
+// RyftTiers Discord bot to see the report.
+// Deploy it in the RyftTiers Supabase project with JWT verification off (the
+// script sends no Supabase key). It uses the SUPABASE_URL and
+// SUPABASE_SERVICE_ROLE_KEY that Supabase gives every function, so there are no
+// secrets to set. The table is in supabase/modanzer_reports.sql.
 
-import { MongoClient } from "npm:mongodb@6.10.0";
+import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2.45.0";
 
 const MAX_BODY = 1_000_000;
 const LIMIT_PER_MINUTE = 6;
 const recent = new Map<string, { n: number; t: number }>();
-let client: MongoClient | null = null;
+let client: SupabaseClient | null = null;
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
@@ -79,8 +78,9 @@ async function shortHash(text: string): Promise<string> {
 
 Deno.serve(async (req: Request) => {
   if (req.method !== "POST") return json({ error: "POST only" }, 405);
-  const uri = Deno.env.get("MODANZER_MONGODB_URI");
-  if (!uri) return json({ error: "reports are not set up on the server yet" }, 503);
+  const url = Deno.env.get("SUPABASE_URL");
+  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!url || !key) return json({ error: "reports are not set up on the server yet" }, 503);
 
   const ip = (req.headers.get("x-forwarded-for") ?? "?").split(",")[0].trim();
   const now = Date.now();
@@ -104,25 +104,28 @@ Deno.serve(async (req: Request) => {
   if (!report || (!report.mods && !report.system && !report.injection)) return json({ error: "missing report" }, 400);
 
   try {
-    if (!client) {
-      client = new MongoClient(uri, { maxPoolSize: 2, serverSelectionTimeoutMS: 8000 });
-      await client.connect();
-    }
-    const col = client.db(Deno.env.get("MODANZER_MONGODB_DB") ?? "primetiers").collection("modanzer_reports");
-    const senderHash = await shortHash(ip + uri); // groups reports from one sender without storing the IP
-    // The bot keeps a unique index on refCode; on the rare clash, draw a new code.
+    client ??= createClient(url, key, { auth: { persistSession: false } });
+    const senderHash = await shortHash(ip + key); // groups reports from one sender without storing the IP
+    // ref_code is unique; on the rare clash, draw a new code.
     for (let attempt = 0; attempt < 5; attempt++) {
       const refCode = newCode();
-      try {
-        await col.insertOne({ ...report, refCode, status: "new", receivedAt: new Date(), senderHash });
-        return json({ ok: true, code: refCode });
-      } catch (err) {
-        if ((err as { code?: number })?.code !== 11000) throw err;
-      }
+      const { error } = await client.from("modanzer_reports").insert({
+        ref_code: refCode,
+        tool: report.tool,
+        mode: report.mode,
+        finished: report.finished,
+        discord_id: report.discordId || null,
+        accounts: report.accounts,
+        mods: report.mods,
+        system: report.system,
+        injection: report.injection,
+        sender_hash: senderHash,
+      });
+      if (!error) return json({ ok: true, code: refCode });
+      if (error.code !== "23505") throw new Error(error.message);
     }
     return json({ error: "the report server could not make a code - try again" }, 502);
   } catch (err) {
-    client = null;
     console.error("insert failed:", err instanceof Error ? err.message : err);
     return json({ error: "the report server could not save it - try again" }, 502);
   }
